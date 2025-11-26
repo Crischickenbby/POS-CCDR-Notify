@@ -1,0 +1,457 @@
+# 🚀 GUÍA COMPLETA PARA PROYECTOS PYTHON/FLASK
+# Cristian - Guía de Referencia para Proyectos Futuros
+# Fecha: Octubre 2025
+
+================================================================================
+📋 CHECKLIST INICIAL - ANTES DE EMPEZAR CUALQUIER PROYECTO
+================================================================================
+
+□ Crear carpeta del proyecto
+□ Crear entorno virtual (venv)
+□ Activar entorno virtual  
+□ Crear .gitignore
+□ Crear .env
+□ Crear requirements.txt
+□ Inicializar git (git init)
+□ Primer commit
+
+================================================================================
+🔧 COMANDOS ESENCIALES PARA CUALQUIER PROYECTO PYTHON
+================================================================================
+
+## 1. CREAR Y CONFIGURAR ENTORNO VIRTUAL
+```bash
+# Crear proyecto
+mkdir mi_nuevo_proyecto
+cd mi_nuevo_proyecto
+
+# Crear entorno virtual
+python -m venv venv
+
+# ACTIVAR entorno virtual
+# Windows PowerShell:
+venv\Scripts\Activate.ps1
+# Windows CMD:
+venv\Scripts\activate.bat
+# Linux/Mac:
+source venv/bin/activate
+
+# Verificar que está activo (debe aparecer (venv) al inicio)
+```
+
+## 2. INSTALACIÓN DE PAQUETES
+```bash
+# Instalar paquetes básicos para Flask
+pip install flask
+pip install python-dotenv
+pip install psycopg2  # Para PostgreSQL
+
+# IMPORTANTE: Guardar dependencias
+pip freeze > requirements.txt
+
+# En proyectos futuros: instalar desde requirements.txt
+pip install -r requirements.txt
+```
+
+## 3. VERIFICACIÓN DEL ENTORNO
+```bash
+# Verificar Python y paquetes instalados
+python -c "import sys; print('Python:', sys.version); import flask; print('Flask:', flask.__version__)"
+
+# Verificar conexión a base de datos (si aplica)
+python -c "from config import get_db_connection; conn = get_db_connection(); print('✅ DB conectada')"
+```
+
+================================================================================
+📁 ARCHIVOS OBLIGATORIOS EN CADA PROYECTO
+================================================================================
+
+## 1. .gitignore (SIEMPRE crear primero)
+```gitignore
+# Entorno virtual
+venv/
+env/
+.venv/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Configuración sensible
+.env
+.env.local
+.env.production
+*.ini
+
+# Base de datos
+*.db
+*.sqlite3
+instance/
+
+# Logs
+*.log
+logs/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Flask específico
+instance/
+.webassets-cache
+
+# Si usas Node.js
+node_modules/
+npm-debug.log
+```
+
+## 2. .env (Configuración sensible)
+```env
+# Base de datos
+DB_HOST=localhost
+DB_NAME=nombre_de_tu_bd
+DB_USER=tu_usuario
+DB_PASSWORD=tu_password
+
+# Flask
+SECRET_KEY=clave_super_secreta_y_larga_minimo_32_caracteres
+DEBUG=True
+
+# APIs externas (ejemplos)
+OPENAI_API_KEY=sk-...
+STRIPE_SECRET_KEY=sk_test_...
+EMAIL_PASSWORD=password_de_email
+```
+
+## 3. config.py (Configuración del proyecto)
+```python
+import os
+from dotenv import load_dotenv
+
+# Cargar variables de entorno
+load_dotenv()
+
+# Configuración de la base de datos
+DB_HOST = os.getenv('DB_HOST', 'localhost')
+DB_NAME = os.getenv('DB_NAME', 'mi_base_datos')
+DB_USER = os.getenv('DB_USER', 'postgres')
+DB_PASSWORD = os.getenv('DB_PASSWORD', '')
+
+# Clave secreta para Flask
+SECRET_KEY = os.getenv('SECRET_KEY', 'clave-por-defecto-cambiar')
+
+# Función para obtener conexión a BD (PostgreSQL)
+def get_db_connection():
+    import psycopg2
+    return psycopg2.connect(
+        host=DB_HOST,
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD
+    )
+```
+
+## 4. requirements.txt (Dependencias)
+```txt
+# Flask básico
+Flask==3.1.2
+python-dotenv==1.1.1
+
+# Base de datos
+psycopg2==2.9.10
+
+# Seguridad (recomendado)
+werkzeug==3.1.3
+
+# Otros comunes
+requests>=2.31.0
+```
+
+================================================================================
+🔒 SEGURIDAD - QUE HACER Y NO HACER
+================================================================================
+
+## ✅ QUE SÍ HACER:
+- SIEMPRE usar entornos virtuales
+- SIEMPRE crear .gitignore antes del primer commit
+- SIEMPRE usar .env para credenciales
+- SIEMPRE hashear contraseñas con bcrypt
+- SIEMPRE validar inputs del usuario
+- SIEMPRE usar requirements.txt
+
+## ❌ QUE NUNCA HACER:
+- ❌ NUNCA subir .env a GitHub
+- ❌ NUNCA hardcodear passwords en el código
+- ❌ NUNCA guardar contraseñas en texto plano
+- ❌ NUNCA usar SECRET_KEY por defecto en producción
+- ❌ NUNCA instalar paquetes sin venv activado
+
+## 🚨 ERRORES CRÍTICOS DE SEGURIDAD:
+```python
+# ❌ MAL - Contraseña en texto plano
+password = "123456"
+
+# ✅ BIEN - Contraseña hasheada
+from werkzeug.security import generate_password_hash, check_password_hash
+password_hash = generate_password_hash("123456")
+```
+
+================================================================================
+🔍 COMANDOS DE VERIFICACIÓN Y DEBUGGING
+================================================================================
+
+## Verificar estado del proyecto:
+```bash
+# Ver qué está instalado
+pip list
+
+# Ver estado de git
+git status
+
+# Verificar entorno virtual activo
+where python  # Windows
+which python  # Linux/Mac
+
+# Probar imports importantes
+python -c "import flask, psycopg2, dotenv; print('✅ Todo OK')"
+
+# Ver conexión a BD
+python -c "from config import get_db_connection; get_db_connection(); print('✅ BD OK')"
+```
+
+## Debugging común:
+```bash
+# Si no encuentra módulos
+pip install nombre_del_modulo
+
+# Si problemas con venv
+deactivate
+venv\Scripts\activate
+
+# Si problemas con .env
+python -c "import os; print(os.getenv('SECRET_KEY'))"
+
+# Ver logs de Flask
+export FLASK_DEBUG=1  # Linux/Mac
+set FLASK_DEBUG=1     # Windows
+```
+
+================================================================================
+🚀 CONFIGURACIÓN DE VS CODE PARA PROYECTOS
+================================================================================
+
+## .vscode/settings.json (Configuración por proyecto)
+```json
+{
+  "python.defaultInterpreterPath": "./venv/Scripts/python.exe",
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": true,
+  "python.formatting.provider": "black",
+  
+  "tailwindCSS.includeLanguages": {
+    "html": "html",
+    "javascript": "javascript",
+    "css": "css"
+  },
+  "css.validate": false,
+  "css.lint.unknownAtDirectives": "ignore",
+  
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/venv": true,
+    "**/.git": true
+  }
+}
+```
+
+## tailwind.config.js (Si usas Tailwind)
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./templates/**/*.html",
+    "./static/js/**/*.js",
+    "./**/*.html"
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+
+================================================================================
+📦 ESTRUCTURA RECOMENDADA DE PROYECTOS FLASK
+================================================================================
+
+```
+mi_proyecto/
+│
+├── venv/                    # Entorno virtual (no subir a git)
+├── app/                     # Código de la aplicación
+│   ├── templates/           # Archivos HTML
+│   │   ├── base.html
+│   │   └── index.html
+│   ├── static/              # CSS, JS, imágenes
+│   │   ├── css/
+│   │   ├── js/
+│   │   └── img/
+│   └── __init__.py
+│
+├── .env                     # Variables de entorno (no subir a git)
+├── .gitignore              # Archivos a ignorar en git
+├── config.py               # Configuración del proyecto
+├── app.py                  # Archivo principal de Flask
+├── requirements.txt        # Dependencias del proyecto
+└── README.md              # Documentación del proyecto
+```
+
+================================================================================
+🎯 WORKFLOW COMPLETO PARA NUEVO PROYECTO
+================================================================================
+
+## Paso a paso:
+1. mkdir nuevo_proyecto && cd nuevo_proyecto
+2. python -m venv venv
+3. venv\Scripts\activate (Windows)
+4. Crear .gitignore (copiar de arriba)
+5. Crear .env con configuraciones
+6. pip install flask python-dotenv psycopg2
+7. pip freeze > requirements.txt
+8. Crear config.py
+9. Crear app.py básico
+10. git init
+11. git add .gitignore .env.example requirements.txt
+12. git commit -m "Initial commit"
+
+## Verificación final:
+- python -c "import flask; print('✅ Flask OK')"
+- python -c "from config import SECRET_KEY; print('✅ Config OK')"
+- git status (debe estar limpio)
+- pip list (verificar paquetes instalados)
+
+================================================================================
+📚 RECURSOS Y COMANDOS ÚTILES
+================================================================================
+
+## Git básico:
+```bash
+git init
+git add .
+git commit -m "mensaje"
+git status
+git log --oneline
+```
+
+## Python virtual environments:
+```bash
+# Crear venv
+python -m venv nombre_venv
+
+# Activar (Windows)
+nombre_venv\Scripts\activate
+
+# Desactivar
+deactivate
+
+# Eliminar venv
+rmdir /s nombre_venv  # Windows
+rm -rf nombre_venv    # Linux/Mac
+```
+
+## Flask comandos:
+```bash
+# Ejecutar app
+python app.py
+
+# Con debug mode
+set FLASK_DEBUG=1 && python app.py
+
+# Usar flask run
+set FLASK_APP=app.py && flask run
+```
+
+================================================================================
+🚨 ERRORES COMUNES Y SOLUCIONES
+================================================================================
+
+## "Module not found":
+- Verificar que venv esté activado
+- pip install modulo_faltante
+- pip install -r requirements.txt
+
+## "Permission denied" en PowerShell:
+- Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+- Luego: venv\Scripts\Activate.ps1
+
+## Problemas con .env:
+- Verificar que python-dotenv está instalado
+- Verificar que load_dotenv() esté en config.py
+- Verificar sintaxis: VARIABLE=valor (sin espacios)
+
+## Git tracking archivos que no debería:
+- git rm --cached archivo.env
+- Agregar archivo al .gitignore
+- git commit -m "Remove sensitive file"
+
+================================================================================
+✅ CHECKLIST FINAL ANTES DE SUBIR A GITHUB
+================================================================================
+
+□ .env NO está en el repositorio
+□ venv/ NO está en el repositorio  
+□ requirements.txt está actualizado
+□ .gitignore incluye archivos sensibles
+□ Contraseñas están hasheadas
+□ SECRET_KEY no está hardcodeada
+□ README.md explica cómo instalar el proyecto
+□ Código funciona en entorno limpio
+
+================================================================================
+💡 TIPS PROFESIONALES
+================================================================================
+
+1. SIEMPRE prueba tu proyecto en un entorno limpio antes de entregarlo
+2. Usa nombres descriptivos para variables y funciones
+3. Comenta código complejo
+4. Mantén requirements.txt actualizado
+5. Haz commits frecuentes con mensajes claros
+6. Nunca hagas git add . sin revisar git status primero
+7. Testa la instalación: pip install -r requirements.txt en venv limpio
+
+================================================================================
+📞 COMANDOS DE EMERGENCIA
+================================================================================
+
+## Si todo se rompe:
+```bash
+# Crear venv nuevo
+deactivate
+rmdir /s venv
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+
+# Si git está mal
+git reset --hard HEAD~1  # Volver al commit anterior
+git clean -fd            # Limpiar archivos no trackeados
+
+# Si .env se subió a git por error
+git rm --cached .env
+echo ".env" >> .gitignore
+git commit -m "Remove .env from tracking"
+```
+
+================================================================================
+FIN DE LA GUÍA - ¡GUARDA ESTE ARCHIVO PARA REFERENCIA FUTURA!
+================================================================================

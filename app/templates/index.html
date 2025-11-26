@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="shortcut icon" href="../static/img/icono.ico" type="image/x-icon">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'ccdr-red': '#CC0000',
+            'ccdr-dark': '#111111',
+            'ccdr-gray': '#f4f4f4'
+          },
+          fontFamily: {
+            sans: ['Poppins', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>CCDR - Centro Comercial</title>
+</head>
+<body class="bg-white font-sans">
+
+  <!-- Navbar -->
+  <nav class="fixed w-full top-0 left-0 z-50 bg-gradient-to-r from-ccdr-red to-red-800 shadow-lg backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <a href="/" class="flex items-center space-x-2">
+          <span class="text-3xl font-extrabold text-white tracking-wide">CCDR</span>
+          <span class="text-gray-200 text-sm hidden md:block">Centro Comercial</span>
+        </a>
+        <div class="hidden md:flex space-x-8 text-white font-semibold">
+          <a href="#inicio" class="hover:text-gray-200 transition">Inicio</a>
+          <a href="#servicios" class="hover:text-gray-200 transition">Servicios</a>
+          <a href="#horarios" class="hover:text-gray-200 transition">Horarios</a>
+          <a href="#ubicacion" class="hover:text-gray-200 transition">Ubicación</a>
+        </div>
+        <a href="{{ url_for('sesion') }}" class="bg-black hover:bg-gray-800 text-white font-semibold px-5 py-2 rounded-lg transition-all duration-300 shadow-md hover:shadow-xl">
+          Empleados
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section id="inicio" class="relative bg-gradient-to-br from-gray-950 via-gray-900 to-black text-center text-white pt-40 pb-32 overflow-hidden">
+    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1586015555745-5e4e3d4bdb6f?auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center opacity-20"></div>
+    <div class="relative z-10 max-w-5xl mx-auto px-4">
+      <h1 class="text-6xl md:text-7xl font-extrabold mb-6 tracking-wide drop-shadow-lg">Bienvenido a CCDR</h1>
+      <p class="text-2xl text-red-400 font-semibold mb-8">Tu Centro Comercial de Confianza</p>
+      <p class="text-lg text-gray-300 mb-12 max-w-2xl mx-auto">Productos de alta calidad, atención personalizada y los mejores precios en un solo lugar.</p>
+      <div class="flex flex-col sm:flex-row justify-center gap-6">
+        <a href="#servicios" class="bg-ccdr-red hover:bg-red-700 text-white font-bold py-4 px-10 rounded-full shadow-lg transition-transform transform hover:scale-105">
+          Ver Servicios
+        </a>
+        <a href="#ubicacion" class="border-2 border-white text-white hover:bg-white hover:text-black font-bold py-4 px-10 rounded-full transition-all duration-300 shadow-md hover:shadow-xl">
+          Cómo Llegar
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Servicios -->
+  <section id="servicios" class="py-24 bg-ccdr-gray">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold text-black mb-4">Nuestros Servicios</h2>
+        <div class="w-24 h-1 bg-ccdr-red mx-auto rounded-full"></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <!-- Card -->
+        <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-transform transform hover:-translate-y-2 border-t-4 border-ccdr-red p-8 text-center">
+          <div class="w-16 h-16 bg-ccdr-red rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fa-solid fa-store text-3xl text-white"></i>
+          </div>
+          <h3 class="text-2xl font-bold mb-3">Venta al Por Mayor</h3>
+          <p class="text-gray-600">Productos de calidad a precios competitivos. Perfecto para tu negocio o emprendimiento.</p>
+        </div>
+        <!-- Card -->
+        <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-transform transform hover:-translate-y-2 border-t-4 border-ccdr-red p-8 text-center">
+          <div class="w-16 h-16 bg-ccdr-red rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fa-solid fa-certificate text-3xl text-white"></i>
+          </div>
+          <h3 class="text-2xl font-bold mb-3">Calidad Garantizada</h3>
+          <p class="text-gray-600">Solo trabajamos con proveedores confiables. Tu satisfacción está garantizada.</p>
+        </div>
+        <!-- Card -->
+        <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-transform transform hover:-translate-y-2 border-t-4 border-ccdr-red p-8 text-center">
+          <div class="w-16 h-16 bg-ccdr-red rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fa-solid fa-tags text-3xl text-white"></i>
+          </div>
+          <h3 class="text-2xl font-bold mb-3">Los Mejores Precios</h3>
+          <p class="text-gray-600">Promociones exclusivas cada semana. Ahorra sin sacrificar calidad.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Horarios -->
+  <section id="horarios" class="py-24 bg-gradient-to-b from-gray-50 via-white to-gray-100">
+    <div class="max-w-6xl mx-auto px-6 text-center">
+      <h2 class="text-4xl font-bold text-black mb-4">Horarios de Atención</h2>
+      <div class="w-24 h-1 bg-ccdr-red mx-auto mb-12 rounded-full"></div>
+      <div class="bg-gradient-to-br from-gray-900 via-black to-gray-950 rounded-2xl shadow-2xl max-w-3xl mx-auto text-left overflow-hidden border border-gray-800">
+        <div class="bg-gradient-to-r from-ccdr-red to-red-700 py-6 text-center">
+          <h3 class="text-2xl font-bold text-white">¡Estamos Abiertos!</h3>
+        </div>
+        <div class="p-8 space-y-6">
+          <div class="flex justify-between text-white text-lg border-b border-gray-700 pb-4">
+            <span>Lunes - Viernes</span>
+            <span class="text-red-400 font-bold">8:00 AM - 8:00 PM</span>
+          </div>
+          <div class="flex justify-between text-white text-lg border-b border-gray-700 pb-4">
+            <span>Sábados</span>
+            <span class="text-red-400 font-bold">9:00 AM - 7:00 PM</span>
+          </div>
+          <div class="flex justify-between text-white text-lg">
+            <span>Domingos</span>
+            <span class="text-red-400 font-bold">10:00 AM - 5:00 PM</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ubicación -->
+  <section id="ubicacion" class="py-24 bg-ccdr-gray">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold text-black mb-4">Encuéntranos</h2>
+        <div class="w-24 h-1 bg-ccdr-red mx-auto rounded-full"></div>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <!-- Información de contacto -->
+        <div class="bg-white rounded-2xl shadow-xl p-10 space-y-6">
+          <h3 class="text-2xl font-bold text-black mb-4">Información de Contacto</h3>
+          <p class="text-gray-600"><strong>Dirección:</strong> Calle 80-82, Centro, Mérida, Yucatán</p>
+          <p class="text-gray-600"><strong>Teléfono:</strong> (999) 329-7006 / (999) 436-2573</p>
+          <p class="text-gray-600"><strong>Email:</strong> atencionclienteccdr@gmail.com</p>
+          <div class="flex space-x-4 pt-6">
+            <a href="#" class="bg-ccdr-red hover:bg-red-700 text-white p-3 rounded-full transition transform hover:scale-110">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="bg-ccdr-red hover:bg-red-700 text-white p-3 rounded-full transition transform hover:scale-110">
+              <i class="fab fa-instagram"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Mapa -->
+        <div class="rounded-2xl overflow-hidden shadow-xl h-96">
+          <iframe class="w-full h-full border-0"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.0016046480565!2d-89.62424528542232!3d20.975366986022525!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f56715b42e5d8d9%3A0x55a290a4604e2f3f!2sCentro%20M%C3%A9rida%2C%20Yuc.!5e0!3m2!1ses!2smx!4v1686505675141!5m2!1ses!2smx"
+            allowfullscreen loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gradient-to-b from-gray-950 via-black to-gray-900 text-gray-400 py-12 border-t border-gray-800">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+        <!-- Logo y descripción -->
+        <div>
+          <h3 class="text-2xl font-bold bg-gradient-to-r from-ccdr-red to-red-500 bg-clip-text text-transparent mb-4">CCDR</h3>
+          <p>Tu centro comercial de confianza. Calidad, precio y atención excepcional.</p>
+        </div>
+        <!-- Enlaces rápidos -->
+        <div>
+          <h4 class="text-lg font-semibold text-red-400 mb-4">Enlaces Rápidos</h4>
+          <ul class="space-y-2">
+            <li><a href="#inicio" class="hover:text-white transition">Inicio</a></li>
+            <li><a href="#servicios" class="hover:text-white transition">Servicios</a></li>
+            <li><a href="#horarios" class="hover:text-white transition">Horarios</a></li>
+            <li><a href="#ubicacion" class="hover:text-white transition">Ubicación</a></li>
+          </ul>
+        </div>
+        <!-- Contacto -->
+        <div>
+          <h4 class="text-lg font-semibold text-red-400 mb-4">Contacto</h4>
+          <ul class="space-y-2">
+            <li>📞 (999) 436-2573</li>
+            <li>📧 tienda@gmail.com</li>
+            <li>📍 C. Centro 80-82</li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-gray-800 pt-6 text-center">
+        <p>&copy; 2025 CCDR - Centro Comercial. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://kit.fontawesome.com/a2e0f6c6ab.js" crossorigin="anonymous"></script>
+</body>
+</html>

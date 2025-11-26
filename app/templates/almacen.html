@@ -1,0 +1,417 @@
+{% extends 'punto_venta.html' %}
+
+{% block title %}Almacén{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+    .almacen-font { font-family: 'Montserrat', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif; }
+    
+    .selected {
+        background-color: #fee2e2 !important;
+        border: 2px solid #dc2626 !important;
+        border-radius: 8px;
+    }
+    
+    /* Asegurar que los modales se muestren correctamente */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .modal.show {
+        display: flex !important; 
+    }
+
+    /* Mejorar el centrado de los modales */
+    .modal > div {
+        margin: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 1rem;
+    }
+
+    /* Scrollbar personalizado */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #dc2626, #b91c1c);
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, #b91c1c, #991b1b);
+    }
+
+    /* Firefox scrollbar */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: #dc2626 #f1f1f1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="almacen-font min-h-screen bg-gradient-to-br from-gray-50 to-zinc-100 p-6">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <h1 class="text-4xl font-bold text-gray-800 mb-2">
+            <i class="fas fa-warehouse text-red-600 mr-3"></i>
+            Almacén
+        </h1>
+        <p class="text-gray-600">Gestiona tu inventario de productos</p>
+    </div>
+
+    <!-- Action Buttons and Search -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <!-- Buttons Section -->
+            <div class="flex flex-wrap gap-3">
+                <button id="addProductBtn" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-md flex items-center gap-2">
+                    <i class="fas fa-plus"></i>
+                    Añadir Producto
+                </button>
+                <button id="manageCategoriesBtn" class="bg-gradient-to-r from-zinc-800 to-black hover:from-zinc-900 hover:to-zinc-950 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-md flex items-center gap-2">
+                    <i class="fas fa-tags"></i>
+                    Categorías
+                </button>
+            </div>
+
+            <!-- Search Section -->
+            <div class="relative">
+                <div class="relative">
+                    <input type="text" id="searchTable" placeholder="Buscar productos..." 
+                           class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent w-full lg:w-80">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para añadir producto -->
+    <div id="addProductModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden" style="display: none;">
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-auto">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-plus-circle text-red-600 mr-2"></i>
+                        Añadir Producto
+                    </h2>
+                    <button class="close-button text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+                
+                <form id="addProductForm" class="space-y-4">
+                    <div>
+                        <label for="product-name" class="block text-sm font-medium text-gray-700 mb-1">Nombre del Producto:</label>
+                        <input type="text" id="product-name" name="productName" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                    </div>
+
+                    <div>
+                        <label for="product-description" class="block text-sm font-medium text-gray-700 mb-1">Descripción:</label>
+                        <textarea id="product-description" name="productDescription" rows="3" required
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Precio:</label>
+                            <input type="number" id="product-price" name="productPrice" step="0.01" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                        </div>
+
+                        <div>
+                            <label for="product-quantity" class="block text-sm font-medium text-gray-700 mb-1">Cantidad:</label>
+                            <input type="number" id="product-quantity" name="productQuantity" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="category-select" class="block text-sm font-medium text-gray-700 mb-1">Categoría:</label>
+                        <select id="category-select" name="productCategory" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                            {% for categoria in categorias %}
+                            <option value="{{ categoria[0] }}">{{ categoria[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-md">
+                        <i class="fas fa-save mr-2"></i>
+                        Guardar Producto
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para gestionar categorías -->
+    <div id="manageCategoriesModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden" style="display: none;">
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg mx-auto max-h-96 overflow-y-auto">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-tags text-zinc-800 mr-2"></i>
+                        Gestionar Categorías
+                    </h2>
+                    <button class="close-button text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+                
+                <!-- Sección para añadir nueva categoría -->
+                <div class="mb-6 p-4 bg-gradient-to-r from-gray-50 to-slate-50 rounded-lg border border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Añadir Nueva Categoría</h3>
+                    <form id="addCategoryForm" class="space-y-3">
+                        <div>
+                            <input type="text" id="categoryName" name="categoryName" required autocomplete="off" placeholder="Nombre de categoría"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:border-transparent">
+                        </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-zinc-800 to-black hover:from-zinc-900 hover:to-zinc-950 text-white py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-md">
+                            <i class="fas fa-plus mr-2"></i>
+                            Añadir Categoría
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Sección para eliminar categorías existentes -->
+                <div class="p-4 bg-gradient-to-r from-gray-50 to-slate-50 rounded-lg border border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Categorías Existentes</h3>
+                    <ul id="categoryList" class="space-y-2">
+                        {% for categoria in categorias %}
+                        <li data-category-id="{{ categoria[0] }}" class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+                            <span class="font-medium text-gray-700">{{ categoria[1] }}</span>
+                            <button class="delete-category-btn bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm transition-colors" data-id="{{ categoria[0] }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de productos -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gradient-to-r from-red-700 to-red-600 text-white">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-sm font-medium uppercase tracking-wider">
+                            <i class="fas fa-box mr-2"></i>Nombre
+                        </th>
+                        <th class="px-6 py-4 text-left text-sm font-medium uppercase tracking-wider">
+                            <i class="fas fa-align-left mr-2"></i>Descripción
+                        </th>
+                        <th class="px-6 py-4 text-left text-sm font-medium uppercase tracking-wider">
+                            <i class="fas fa-cubes mr-2"></i>Cantidad
+                        </th>
+                        <th class="px-6 py-4 text-left text-sm font-medium uppercase tracking-wider">
+                            <i class="fas fa-dollar-sign mr-2"></i>Precio
+                        </th>
+                        <th class="px-6 py-4 text-left text-sm font-medium uppercase tracking-wider">
+                            <i class="fas fa-tag mr-2"></i>Categoría
+                        </th>
+                        <th class="px-6 py-4 text-left text-sm font-medium uppercase tracking-wider">
+                            <i class="fas fa-cogs mr-2"></i>Acciones
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for product in productos %}
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">{{ product[1] }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-gray-700 max-w-xs truncate">{{ product[2] }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {% if product[3] > 10 %}bg-green-100 text-green-800{% elif product[3] > 5 %}bg-yellow-100 text-yellow-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                {{ product[3] }} unidades
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-semibold text-gray-900">${{ "%.2f"|format(product[4]) }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                                {{ product[5] }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <button class="add-quantity-btn bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-xs transition-colors" data-id="{{ product[0] }}" title="Añadir stock">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button class="delete-product-btn bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-xs transition-colors" data-id="{{ product[0] }}" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button class="edit-product-btn bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-xs transition-colors" data-id="{{ product[0] }}" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para añadir cantidad de producto -->
+    <div id="addQuantityModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden" style="display: none;">
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-auto">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-plus-circle text-green-600 mr-2"></i>
+                        Añadir Stock
+                    </h2>
+                    <button id="closeAddQuantityModal" class="text-gray-500 hover:text-gray-700 text-2xl transition-colors">&times;</button>
+                </div>
+                
+                <form id="addQuantityForm" class="space-y-4">
+                    <p class="text-gray-600">¿Cuántos productos deseas agregar al inventario?</p>
+                    <div>
+                        <input type="number" id="quantityToAdd" name="quantityToAdd" min="1" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" 
+                               placeholder="Cantidad a agregar">
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-md">
+                        <i class="fas fa-plus mr-2"></i>
+                        Añadir al Stock
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/almacen.js') }}"></script>
+
+    <!-- Modal para editar producto -->
+    <div id="editProductModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden" style="display: none;">
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-auto">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-edit text-blue-600 mr-2"></i>
+                        Editar Producto
+                    </h2>
+                    <button class="close-button text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+                
+                <form id="editProductForm" class="space-y-4">
+                    <div>
+                        <label for="edit-product-name" class="block text-sm font-medium text-gray-700 mb-1">Nombre del Producto:</label>
+                        <input type="text" id="edit-product-name" name="productName" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <div>
+                        <label for="edit-product-description" class="block text-sm font-medium text-gray-700 mb-1">Descripción:</label>
+                        <textarea id="edit-product-description" name="productDescription" rows="3" required
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"></textarea>
+                    </div>
+
+                    <div>
+                        <label for="edit-product-price" class="block text-sm font-medium text-gray-700 mb-1">Precio:</label>
+                        <input type="number" id="edit-product-price" name="productPrice" step="0.01" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <div>
+                        <label for="edit-category-select" class="block text-sm font-medium text-gray-700 mb-1">Categoría:</label>
+                        <select id="edit-category-select" name="productCategory" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            {% for categoria in categorias %}
+                            <option value="{{ categoria[0] }}">{{ categoria[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-md">
+                        <i class="fas fa-save mr-2"></i>
+                        Guardar Cambios
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para eliminar cantidad/producto -->
+    <div id="deleteQuantityModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden" style="display: none;">
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-auto">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-minus-circle text-red-600 mr-2"></i>
+                        Reducir Inventario
+                    </h2>
+                    <button id="closeDeleteQuantityModal" class="text-gray-500 hover:text-gray-700 text-2xl transition-colors">&times;</button>
+                </div>
+                
+                <div id="productInfoDelete" class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <h3 class="font-semibold text-gray-800 mb-2">Producto:</h3>
+                    <p id="deleteProductName" class="text-gray-700"></p>
+                    <p class="text-sm text-gray-600 mt-1">Stock actual: <span id="deleteCurrentStock" class="font-semibold"></span> unidades</p>
+                </div>
+
+                <div class="mb-6">
+                    <label for="quantityToDelete" class="block text-sm font-semibold text-gray-700 mb-2">
+                        ¿Cuántas unidades desea eliminar?
+                    </label>
+                    <input type="number" 
+                           id="quantityToDelete" 
+                           min="1" 
+                           placeholder="Cantidad a eliminar"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors">
+                    <div class="mt-2 flex gap-2">
+                        <button id="deleteHalfStock" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-2 px-3 rounded-lg text-sm transition-colors">
+                            Mitad
+                        </button>
+                        <button id="deleteAllStock" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-lg text-sm transition-colors">
+                            Todo el stock
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button id="cancelDeleteQuantity" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                        <i class="fas fa-times mr-2"></i>
+                        Cancelar
+                    </button>
+                    <button id="confirmDeleteQuantity" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                        <i class="fas fa-check mr-2"></i>
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,191 @@
+{% extends 'punto_venta.html' %}
+
+{% block title %}Venta{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+    .venta-font { font-family: 'Montserrat', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif; }
+    .btn-agregar, .btn-quitar, .btn-venta {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-agregar:hover, .btn-quitar:hover, .btn-venta:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Scrollbar personalizado */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #dc2626, #b91c1c);
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, #b91c1c, #991b1b);
+    }
+
+    /* Firefox scrollbar */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: #dc2626 #f1f1f1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="venta-font min-h-screen bg-gradient-to-br from-gray-50 to-zinc-100 p-6">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <h1 class="text-4xl font-bold text-gray-800 mb-2">
+            <i class="fas fa-cash-register text-red-600 mr-3"></i>
+            Punto de Venta
+        </h1>
+        <p class="text-gray-600">Gestiona las ventas de tu tienda</p>
+    </div>
+
+    <!-- Selección de Cliente -->
+    <div class="mb-8 max-w-lg">
+        <label for="cliente-busqueda" class="block text-lg font-medium text-gray-700 mb-2">
+            <i class="fas fa-user mr-2"></i>Seleccionar cliente:
+        </label>
+        <input type="text" id="cliente-busqueda" placeholder="Buscar cliente por nombre o correo..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-lg animate__animated" autocomplete="off">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+        <ul id="cliente-sugerencias" class="bg-white border border-gray-200 rounded-lg mt-1 hidden z-10"></ul>
+        <input type="hidden" id="cliente-id-seleccionado">
+        <div id="cliente-seleccionado-info" class="mt-2 text-green-700 font-semibold"></div>
+    </div>
+
+    <!-- Layout en dos columnas: Carrito y Búsqueda -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Sección de Carrito de Compras -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="bg-gradient-to-r from-red-700 to-red-600 text-white p-6">
+                <h2 class="text-3xl font-bold mb-1">
+                    <i class="fas fa-shopping-cart mr-3"></i>
+                    Carrito de Compras
+                </h2>
+                <p class="text-red-100 text-lg">Productos seleccionados para la venta</p>
+            </div>
+
+            <div class="p-6">
+                <!-- Tabla de Productos Seleccionados -->
+                <div class="mb-6 overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gradient-to-r from-gray-50 to-slate-50">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Producto</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">Descripción</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">Cantidad</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">Precio Unit.</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">Subtotal</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productos-seleccionados" class="bg-white divide-y divide-gray-200">
+                            <!-- Los productos seleccionados se llenarán dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Panel de Total y Pago -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Total -->
+                    <div class="p-6 bg-gradient-to-br from-red-50 to-rose-50 rounded-xl border-2 border-red-200">
+                        <div class="text-center">
+                            <p class="text-lg text-gray-600 mb-2">Total de la Venta</p>
+                            <p class="text-4xl font-bold text-red-600">
+                                $<span id="total-venta">0.00</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Método de Pago y Botón -->
+                    <div class="space-y-4">
+                        <div>
+                            <label for="metodo-pago" class="block text-lg font-medium text-gray-700 mb-3">
+                                <i class="fas fa-credit-card mr-2"></i>Método de Pago:
+                            </label>
+                            <select id="metodo-pago"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white text-lg">
+                                <option value="1">💵 Efectivo</option>
+                                <option value="2">🏦 Transferencia</option>
+                                <option value="3">💳 Tarjeta</option>
+                            </select>
+                        </div>
+
+                        <!-- Botón de Venta -->
+                        <button class="btn-venta w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-4 px-6 rounded-lg font-bold text-xl transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center gap-3"
+                                id="registrar-venta">
+                            <i class="fas fa-cash-register text-xl"></i>
+                            Registrar Venta
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Búsqueda de Productos -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="bg-gradient-to-r from-zinc-900 to-black text-white p-6">
+                <h2 class="text-3xl font-bold mb-4">
+                    <i class="fas fa-search mr-3"></i>
+                    Buscar Productos
+                </h2>
+                <div class="relative max-w-md">
+                    <input type="text"
+                           id="buscador"
+                           placeholder="Buscar producto por nombre..."
+                           class="w-full px-4 py-4 pl-12 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-lg">
+                    <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+
+            <!-- Tabla de Productos -->
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gradient-to-r from-gray-50 to-slate-50">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                <i class="fas fa-tag mr-2"></i>Nombre
+                            </th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                <i class="fas fa-align-left mr-2"></i>Descripción
+                            </th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                <i class="fas fa-cubes mr-2"></i>Stock
+                            </th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                <i class="fas fa-dollar-sign mr-2"></i>Precio
+                            </th>
+                            <th class="px-6 py-4 text-start text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                <i class="fas fa-plus mr-2"></i>Acción
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-productos" class="bg-white divide-y divide-gray-200">
+                        <!-- Los productos se llenarán dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/venta.js') }}"></script>
+{% endblock %}

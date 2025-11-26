@@ -1,0 +1,11 @@
+blinker==1.9.0 Esto es para manejar señales en Flask osea eventos como cuando un usuario se registra o inicia sesión
+click==8.2.1 Esto es una dependencia de Flask para que funcione bien
+colorama==0.4.6 Esto es para dar color a la terminal
+Flask==3.1.1 Esto es para el framework web
+itsdangerous==2.2.0 Esto es para manejar tokens y sesiones
+Jinja2==3.1.6 Esto es para el motor de plantillas
+MarkupSafe==3.0.2 Esto es para escapar contenido HTML
+ply==3.11 Esto es para el análisis léxico y sintáctico
+psycopg2==2.9.10 Esto es para la conexión a PostgreSQL
+python-dotenv==1.1.1 Esto es para cargar variables de entorno desde un archivo .env
+Werkzeug==3.1.3 Esto es para las utilidades de WSGI( Web Server Gateway Interface osea la interfaz entre el servidor web y la aplicación web) sirve para manejar solicitudes y respuestas HTTP

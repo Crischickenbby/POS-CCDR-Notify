@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{{ url_for('static', filename='js/punto_venta.js') }}" defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="../static/img/icono.ico" type="image/x-icon">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ccdr': {
+                            'red': '#CC0000',
+                            'red-dark': '#990000',
+                            'red-light': '#FF3333',
+                            'black': '#1a1a1a',
+                            'gray-dark': '#2d2d2d',
+                            'gray-light': '#f5f5f5'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    {% block styles %}{% endblock %}
+    <title>{% block title %}Punto De Venta{% endblock %}</title>
+</head>
+
+<body class="bg-gray-100 font-sans">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar fixed left-0 top-0 w-20 lg:w-64 h-screen bg-gradient-to-b from-ccdr-red to-ccdr-red-dark text-white transition-all duration-300 ease-in-out flex flex-col z-40" id="sidebar">
+            <!-- Logo -->
+            <div class="p-4 border-b border-ccdr-red-dark">
+                <div class="flex items-center justify-between lg:justify-between">
+                    <div class="logo_name hidden lg:block text-3xl font-bold text-white tracking-wider">
+                        <i class='bx bx-store text-white mr-2'></i>
+                        CCDR
+                    </div>
+                    <i class='bx bx-menu text-2xl cursor-pointer' id="btn"></i>
+                </div>
+                <span class="hidden lg:block text-xs text-red-200 font-medium mt-1">CENTRO COMERCIAL</span>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 py-4">
+                <ul class="nav-list space-y-2 px-2">
+                    <li>
+                        <a href="{{ url_for('venta') }}" 
+                        class="flex items-center p-2 lg:p-3 justify-center lg:justify-start rounded-lg hover:bg-ccdr-red-dark hover:bg-opacity-70 transition-colors group">
+                        <i class='bx bx-cart-alt text-xl min-w-[24px]'></i>
+                        <span class="links_name ml-3 hidden lg:inline">Ventas</span>
+                    </a>
+                </li>
+                    <li>
+                        <a href="{{ url_for('almacen') }}" 
+                           class="flex items-center p-2 lg:p-3 justify-center lg:justify-start rounded-lg hover:bg-ccdr-red-dark hover:bg-opacity-70 transition-colors group">
+                            <i class='bx bx-package text-xl min-w-[24px]'></i>
+                            <span class="links_name ml-3 hidden lg:inline">Productos</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('empleado') }}" 
+                           class="flex items-center p-2 lg:p-3 justify-center lg:justify-start rounded-lg hover:bg-ccdr-red-dark hover:bg-opacity-70 transition-colors group">
+                            <i class='bx bx-user-plus text-xl min-w-[24px]'></i>
+                            <span class="links_name ml-3 hidden lg:inline">Empleados</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('devolucion') }}" 
+                           class="flex items-center p-2 lg:p-3 justify-center lg:justify-start rounded-lg hover:bg-ccdr-red-dark hover:bg-opacity-70 transition-colors group">
+                            <i class='bx bx-undo text-xl min-w-[24px]'></i>
+                            <span class="links_name ml-3 hidden lg:inline">Devoluciones</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('corte') }}" 
+                           class="flex items-center p-2 lg:p-3 justify-center lg:justify-start rounded-lg hover:bg-ccdr-red-dark hover:bg-opacity-70 transition-colors group">
+                            <i class='bx bx-money-withdraw text-xl min-w-[24px]'></i>
+                            <span class="links_name ml-3 hidden lg:inline">Corte de Caja</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('correos') }}" 
+                           class="flex items-center p-2 lg:p-3 justify-center lg:justify-start rounded-lg hover:bg-ccdr-red-dark hover:bg-opacity-70 transition-colors group">
+                            <i class='bx bx-envelope text-xl min-w-[24px]'></i>
+                            <span class="links_name ml-3 hidden lg:inline">Correos</span>
+                        </a>
+                    </li>
+                   
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col ml-20 lg:ml-64 transition-all duration-300">
+            <!-- Header -->
+            
+
+            <!-- Content Area -->
+            <div class="flex-1 flex">
+                <div class="flex-1 p-6 lg:p-8 min-h-screen bg-transparent">
+                    <style>
+                        /* Scrollbar oscuro global */
+                        ::-webkit-scrollbar { height: 10px; width: 10px; }
+                        ::-webkit-scrollbar-track { background: #121214; }
+                        ::-webkit-scrollbar-thumb { background: #2a2a2d; border-radius: 6px; border: 2px solid #121214; }
+                        ::-webkit-scrollbar-thumb:hover { background: #3a3a3d; }
+                        /* Firefox */
+                        html { scrollbar-color: #2a2a2d #121214; scrollbar-width: thin; }
+                    </style>
+                <div class="flex-1 p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+                    {% block content %}
+                        <h1 class="text-5xl font-bold text-ccdr-red mb-4 tracking-wide drop-shadow-md">
+                            Bienvenido, {{ user.name if user else 'Usuario' }} {{ user.last_name if user else '' }}
+                        </h1>
+                        <p class="text-gray-600 text-lg mb-8">Selecciona un módulo para comenzar</p>
+                        <!-- Cards de acceso rápido a módulos mejoradas -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 max-w-5xl mx-auto mt-10">
+                            <a href="{{ url_for('venta') }}" class="group bg-white rounded-3xl shadow-2xl p-10 flex flex-col items-center hover:bg-ccdr-red hover:text-white transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-ccdr-red-dark scale-100 hover:scale-105">
+                                <i class='bx bx-cart-alt text-6xl mb-4 group-hover:text-white text-ccdr-red drop-shadow-lg'></i>
+                                <span class="font-bold text-2xl mb-1 tracking-wide">Ventas</span>
+                                <span class="text-gray-400 group-hover:text-white text-base">Realiza ventas y gestiona tickets</span>
+                            </a>
+                            <a href="{{ url_for('almacen') }}" class="group bg-white rounded-3xl shadow-2xl p-10 flex flex-col items-center hover:bg-ccdr-red hover:text-white transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-ccdr-red-dark scale-100 hover:scale-105">
+                                <i class='bx bx-package text-6xl mb-4 group-hover:text-white text-ccdr-red drop-shadow-lg'></i>
+                                <span class="font-bold text-2xl mb-1 tracking-wide">Productos</span>
+                                <span class="text-gray-400 group-hover:text-white text-base">Administra el inventario</span>
+                            </a>
+                            <a href="{{ url_for('empleado') }}" class="group bg-white rounded-3xl shadow-2xl p-10 flex flex-col items-center hover:bg-ccdr-red hover:text-white transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-ccdr-red-dark scale-100 hover:scale-105">
+                                <i class='bx bx-user-plus text-6xl mb-4 group-hover:text-white text-ccdr-red drop-shadow-lg'></i>
+                                <span class="font-bold text-2xl mb-1 tracking-wide">Empleados</span>
+                                <span class="text-gray-400 group-hover:text-white text-base">Gestiona los empleados</span>
+                            </a>
+                            <a href="{{ url_for('devolucion') }}" class="group bg-white rounded-3xl shadow-2xl p-10 flex flex-col items-center hover:bg-ccdr-red hover:text-white transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-ccdr-red-dark scale-100 hover:scale-105">
+                                <i class='bx bx-undo text-6xl mb-4 group-hover:text-white text-ccdr-red drop-shadow-lg'></i>
+                                <span class="font-bold text-2xl mb-1 tracking-wide">Devoluciones</span>
+                                <span class="text-gray-400 group-hover:text-white text-base">Procesa devoluciones</span>
+                            </a>
+                            <a href="{{ url_for('corte') }}" class="group bg-white rounded-3xl shadow-2xl p-10 flex flex-col items-center hover:bg-ccdr-red hover:text-white transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-ccdr-red-dark scale-100 hover:scale-105">
+                                <i class='bx bx-money-withdraw text-6xl mb-4 group-hover:text-white text-ccdr-red drop-shadow-lg'></i>
+                                <span class="font-bold text-2xl mb-1 tracking-wide">Corte de Caja</span>
+                                <span class="text-gray-400 group-hover:text-white text-base">Realiza cortes de caja</span>
+                            </a>
+                            <a href="{{ url_for('correos') }}" class="group bg-white rounded-3xl shadow-2xl p-10 flex flex-col items-center hover:bg-ccdr-red hover:text-white transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-ccdr-red-dark scale-100 hover:scale-105">
+                                <i class='bx bx-envelope text-6xl mb-4 group-hover:text-white text-ccdr-red drop-shadow-lg'></i>
+                                <span class="font-bold text-2xl mb-1 tracking-wide">Correos</span>
+                                <span class="text-gray-400 group-hover:text-white text-base">Gestiona los correos electrónicos</span>
+                            </a>
+                        </div>
+                    </div>
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>
