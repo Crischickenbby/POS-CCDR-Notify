@@ -1,4 +1,4 @@
-import psycopg2
+import psycopg
 import os
 from dotenv import load_dotenv
 
@@ -41,14 +41,14 @@ def get_db_connection():
     Establece y retorna una conexión a la base de datos PostgreSQL.
     
     Returns:
-        psycopg2.connection: Objeto de conexión a PostgreSQL
+        psycopg.Connection: Objeto de conexión a PostgreSQL
         
     Raises:
-        psycopg2.Error: Si falla la conexión a la base de datos
+        psycopg.Error: Si falla la conexión a la base de datos
     """
-    return psycopg2.connect(
+    return psycopg.connect(
         host=DB_HOST,
-        database=DB_NAME,
+        dbname=DB_NAME,
         user=DB_USER,
         password=DB_PASSWORD
     )

@@ -9,12 +9,6 @@ import time #esto es para medir el tiempo de respuesta de las operaciones críti
 # Importar sistema de hashing de contraseñas
 from werkzeug.security import generate_password_hash, check_password_hash
 
-# Importar el sistema de logging de actividades
-from activity_logger import (
-    ActivityLogger, log_route_access, log_api_call, 
-    log_login, log_logout, log_product_search, 
-    log_sale, log_product_creation
-)
 
 # Inicializa la aplicación Flask
 app = Flask(__name__, template_folder='app/templates', static_folder='app/static', )
@@ -161,9 +155,6 @@ def login():
             print(f"✅ RENDIMIENTO - Login exitoso: {tiempo_respuesta:.3f} segundos {'OK' if tiempo_respuesta <= 2 else 'LENTO'}")
             print(f"✅ Usuario logueado: ID={user[0]}, Email={email}, Rol={user_role}")
 
-            # 📝 LOG: Registrar login exitoso
-            log_login(user[0], email, success=True)
-
             if user_role == 3:
                 flash("¡Inicio de sesión exitoso!", "success")
                 return redirect('/')
@@ -176,8 +167,6 @@ def login():
             print(f"❌ RENDIMIENTO - Login fallido: {tiempo_respuesta:.3f} segundos {'OK' if tiempo_respuesta <= 2 else 'LENTO'}")
             print(f"❌ Usuario encontrado: {user is not None}, Email: {email}")
             
-            # 📝 LOG: Registrar intento de login fallido
-            log_login(None, email, success=False)
             
             flash("Correo o contraseña incorrectos.", "error")
             return redirect('/sesion')
@@ -187,14 +176,6 @@ def login():
         import traceback
         traceback.print_exc()
         
-        # 📝 LOG: Registrar error en login
-        ActivityLogger.log_activity(
-            action_type='LOGIN',
-            module='AUTH',
-            description=f'Error en login: {str(e)}',
-            details={'email': email, 'error': str(e)},
-            status='ERROR'
-        )
         
         flash("Ocurrió un problema al intentar iniciar sesión.", "error")
         return redirect('/sesion')
@@ -278,7 +259,6 @@ def add_user():
 
 @app.route('/punto_venta')#Esta ruta es para el apartado de punto de venta, donde solo pueden entrar los usuarios que tengan el rol 1 o 2(Jefe o empleado)
 @login_required(roles=[1, 2])  # Solo jefe (1) y empleado (2)
-@log_route_access('PUNTO_VENTA')
 def punto_venta():
     user_id = session['user_id']
     conn = get_db_connection()
@@ -303,13 +283,11 @@ def punto_venta():
 #===========================================RUTA DEL APARTADO DE VENTA========================================================
 
 @app.route('/venta')#Esta ruta es para el apartado de venta, donde solo pueden entrar los usuarios que tengan el rol 1 o 2(Jefe o empleado)
-@log_route_access('VENTA')
 def venta():
     return render_template('venta.html')   #prueba mientras se verifica la parte del dashboard  
 
 
 @app.route('/api/registrar_venta', methods=['POST'])
-@log_api_call('SALE', 'Registrar nueva venta')
 def registrar_venta():
     # ⏱️ MEDICIÓN DE RENDIMIENTO: Registrar venta debe ser ≤ 2 segundos
     tiempo_inicio = time.time()
@@ -398,7 +376,6 @@ def registrar_venta():
 
 
 @app.route('/api/productos', methods=['GET'])# Esta ruta es para obtener los productos disponibles en la base de datos
-@log_api_call('PRODUCT_SEARCH', 'Consultar productos disponibles')
 def api_productos():
     # ⏱️ MEDICIÓN DE RENDIMIENTO: Consulta de productos para POS debe ser ≤ 2 segundos
     tiempo_inicio = time.time()
@@ -449,7 +426,6 @@ def api_clientes():
 
 #===========================================RUTA DEL APARTADO DE ALMACÉN========================================================
 @app.route('/almacen')# Esta ruta es para el apartado de almacén, donde solo pueden entrar los usuarios que tengan el rol 1 o 2(Jefe o empleado)
-@log_route_access('ALMACEN')
 def almacen():
     # ⏱️ MEDICIÓN DE RENDIMIENTO: Consultar inventario debe ser ≤ 2 segundos
     tiempo_inicio = time.time()
@@ -806,7 +782,6 @@ def delete_category():
 
 #===========================================RUTAS DEL APARTADO DE EMPLEADO========================================================
 @app.route('/empleado')
-@log_route_access('EMPLEADO')
 def empleado():
     try:
         # Conexión a la base de datos
