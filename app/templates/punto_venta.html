@@ -102,11 +102,9 @@
         <!-- Main Content -->
         <div class="flex-1 flex flex-col ml-20 lg:ml-64 transition-all duration-300">
             <!-- Header -->
-            
-
             <!-- Content Area -->
             <div class="flex-1 flex">
-                <div class="flex-1 p-6 lg:p-8 min-h-screen bg-transparent">
+                <div class="flex-1 min-h-screen bg-transparent">
                     <style>
                         /* Scrollbar oscuro global */
                         ::-webkit-scrollbar { height: 10px; width: 10px; }
@@ -116,7 +114,7 @@
                         /* Firefox */
                         html { scrollbar-color: #2a2a2d #121214; scrollbar-width: thin; }
                     </style>
-                <div class="flex-1 p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+                <div class="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
                     {% block content %}
                         <h1 class="text-5xl font-bold text-ccdr-red mb-4 tracking-wide drop-shadow-md">
                             Bienvenido, {{ user.name if user else 'Usuario' }} {{ user.last_name if user else '' }}

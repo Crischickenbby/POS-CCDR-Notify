@@ -1,0 +1,48 @@
+{% extends 'punto_venta.html' %}
+
+{% block title %}Clientes{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block content %}
+<div class="p-6">
+	<h1 class="text-2xl font-bold mb-4">Buscar Clientes</h1>
+
+	{% set filtro = request.form.get('filtro', '') %}<!--Esto obtiene el valor del filtro seleccionado en el formulario-->
+	<div class="flex gap-2 mb-4">
+		<form method="POST" style="display:inline;">
+			<input type="hidden" name="filtro" value="mas_compran">
+			<button type="submit" class="px-3 py-2 {% if filtro == 'mas_compran' %}bg-green-800{% else %}bg-green-600{% endif %} text-white rounded">Clientes que más compran</button>
+		</form>
+		<form method="POST" style="display:inline;">
+			<input type="hidden" name="filtro" value="menos_compran">
+			<button type="submit" class="px-3 py-2 {% if filtro == 'menos_compran' %}bg-yellow-800{% else %}bg-yellow-600{% endif %} text-white rounded">Clientes que menos compran</button>
+		</form>
+	</div>
+
+	<form method="POST" class="mb-4" autocomplete="off">
+		<input id="busquedaCliente" name="busqueda" type="text" placeholder="Buscar cliente por nombre, apellido o correo..." class="border px-3 py-2 rounded w-full max-w-md" value="{% if filtro %}{% else %}{{ request.form.get('busqueda', '') }}{% endif %}">
+		<button type="submit" class="ml-2 px-4 py-2 bg-red-600 text-white rounded">Buscar</button>
+	</form>
+	<div id="listaClientes">
+		{% if clientes and clientes|length > 0 %}<!--Clientes|length se pone asi porque es una forma de verificar si la lista tiene elementos-->
+			{% for cliente in clientes %}<!--Cliente es un elemento de la lista clientes, que contiene información sobre un cliente específico-->
+				<div class="cliente-item mb-2">
+					<span>{{ cliente[1] }} {{ cliente[2] }}</span> - <span>{{ cliente[3] }}</span>
+					{% if cliente|length > 4 %}
+						<span class="ml-2 text-sm text-gray-500">Compras: {{ cliente[4] }}</span>
+					{% endif %}
+				</div>
+			{% endfor %}
+		{% else %}
+			<div>No hay clientes registrados.</div>
+		{% endif %}
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

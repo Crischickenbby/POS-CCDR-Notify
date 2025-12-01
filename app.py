@@ -319,7 +319,7 @@ def registrar_venta():
         fecha_hora_actual = datetime.now()
 
         # Insertar en la tabla Sale, ahora con el cliente de la tabla Cliente
-        cur.execute('INSERT INTO "Sale" ("Date", "Total_Amount", "ID_User", id_cliente) '
+        cur.execute('INSERT INTO "Sale" ("Date", "Total_Amount", "ID_User", "ID_Client") '
                 'VALUES (%s, %s, %s, %s) RETURNING "ID_Sale";',
                 (fecha_hora_actual, total, user_id, cliente_id))
         result = cur.fetchone()
@@ -407,7 +407,7 @@ def api_clientes():
     """Devuelve la lista de clientes (usuarios con ID_Rol=3) para autocompletado en ventas."""
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute('SELECT "ID_User", "Name", "LastName", "Email" FROM "User" WHERE "ID_Rol" = 3 AND "Status" = 1;')
+    cur.execute('SELECT "ID_User", "Name", "Last_Name", "Email" FROM "User" WHERE "ID_Rol" = 3 AND "ID_User_Status" = 1;')
     clientes = cur.fetchall()
     cur.close()
     conn.close()
@@ -781,30 +781,46 @@ def delete_category():
 #===========================================FIN RUTAS DEL APARTADO ALMACÉN========================================================
 
 #===========================================RUTAS DEL APARTADO DE EMPLEADO========================================================
-@app.route('/empleado')
+
+@app.route('/empleado', methods=['GET', 'POST'])
 def empleado():
     try:
-        # Conexión a la base de datos
         conn = get_db_connection()
         cur = conn.cursor()
-
-        # Consulta para obtener los usuarios con rol 2
-        query = '''
-            SELECT "ID_User", "Name", "Last_Name", "Email", "Password", "ID_Rol"
-            FROM "User"
-            WHERE "ID_Rol" = 2 AND "ID_User_Status" = 1;
-
-        '''
-        cur.execute(query)
-        empleados = cur.fetchall()
-
-        # Renderizar la plantilla y pasar los datos de los empleados
+        empleados = []
+        if request.method == 'POST':
+            busqueda = request.form.get('busqueda')
+            if busqueda:
+                query = '''
+                    SELECT "ID_User", "Name", "Last_Name", "Email", "Password", "ID_Rol"
+                    FROM "User"
+                    WHERE "ID_Rol" = 3 AND "ID_User_Status" = 1 AND (
+                        LOWER("Name") LIKE %s OR LOWER("Last_Name") LIKE %s OR LOWER("Email") LIKE %s
+                    );
+                '''
+                like = f"%{busqueda.lower()}%"
+                cur.execute(query, (like, like, like))
+                empleados = cur.fetchall()
+            else:
+                query = '''
+                    SELECT "ID_User", "Name", "Last_Name", "Email", "Password", "ID_Rol"
+                    FROM "User"
+                    WHERE "ID_Rol" = 3 AND "ID_User_Status" = 1;
+                '''
+                cur.execute(query)
+                empleados = cur.fetchall()
+        else:
+            query = '''
+                SELECT "ID_User", "Name", "Last_Name", "Email", "Password", "ID_Rol"
+                FROM "User"
+                WHERE "ID_Rol" = 3 AND "ID_User_Status" = 1;
+            '''
+            cur.execute(query)
+            empleados = cur.fetchall()
         return render_template('empleado.html', empleados=empleados)
-
     except Exception as e:
         print(f"Error al obtener empleados: {e}")
         return "Ocurrió un error al cargar los empleados."
-
     finally:
         if conn:
             cur.close()
@@ -1600,25 +1616,71 @@ def rendimiento():
 #===========================================FIN DOCUMENTACIÓN DE RENDIMIENTO====================================================
 
 
+
 @app.route('/correos', methods=['GET', 'POST'])
 def correos():
     """Vista para el módulo de correos electrónicos, mostrando buscador de clientes solo con rol Cliente (ID_Rol=3)."""
-    cliente = None
+    clientes = []
+    filtro = None
+    busqueda = None
     if request.method == 'POST':
+        filtro = request.form.get('filtro')
         busqueda = request.form.get('busqueda')
-        if busqueda:
-            conn = get_db_connection()
-            cur = conn.cursor()
-            cur.execute('''SELECT "ID_User", "Name", "Last_Name", "Email" FROM "User" WHERE "ID_Rol"=3 AND (LOWER("Name") LIKE %s OR LOWER("Last_Name") LIKE %s OR LOWER("Email") LIKE %s)''', (f"%{busqueda.lower()}%", f"%{busqueda.lower()}%", f"%{busqueda.lower()}%"))
-            resultado = cur.fetchone()
-            conn.close()
-            if resultado:
-                cliente = {
-                    'id': resultado[0],
-                    'nombre': f"{resultado[1]} {resultado[2]}",
-                    'email': resultado[3]
-                }
-    return render_template('email_buscar.html', cliente=cliente)
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        if filtro == 'mas_compran':
+            # Clientes con más de 10 compras
+            query = '''
+                SELECT u."ID_User", u."Name", u."Last_Name", u."Email", COUNT(s."ID_Sale") as compras
+                FROM "User" u
+                LEFT JOIN "Sale" s ON u."ID_User" = s."ID_Client"
+                WHERE u."ID_Rol" = 3 AND u."ID_User_Status" = 1
+                GROUP BY u."ID_User"
+                HAVING COUNT(s."ID_Sale") > 10
+                ORDER BY compras DESC, u."Name"
+            '''
+            cur.execute(query)
+            clientes = cur.fetchall()
+        elif filtro == 'menos_compran':
+            # Clientes con menos de 10 compras
+            query = '''
+                SELECT u."ID_User", u."Name", u."Last_Name", u."Email", COUNT(s."ID_Sale") as compras
+                FROM "User" u
+                LEFT JOIN "Sale" s ON u."ID_User" = s."ID_Client"
+                WHERE u."ID_Rol" = 3 AND u."ID_User_Status" = 1
+                GROUP BY u."ID_User"
+                HAVING COUNT(s."ID_Sale") < 10
+                ORDER BY compras ASC, u."Name"
+            '''
+            cur.execute(query)
+            clientes = cur.fetchall()
+        elif busqueda:
+            # Búsqueda por nombre, apellido o correo
+            query = '''
+                SELECT "ID_User", "Name", "Last_Name", "Email"
+                FROM "User"
+                WHERE "ID_Rol" = 3 AND "ID_User_Status" = 1
+                AND (LOWER("Name") LIKE %s OR LOWER("Last_Name") LIKE %s OR LOWER("Email") LIKE %s)
+            '''
+            like = f"%{busqueda.lower()}%"
+            cur.execute(query, (like, like, like))
+            clientes = cur.fetchall()
+        else:
+            # Mostrar todos los clientes
+            query = '''
+                SELECT "ID_User", "Name", "Last_Name", "Email"
+                FROM "User"
+                WHERE "ID_Rol" = 3 AND "ID_User_Status" = 1
+            '''
+            cur.execute(query)
+            clientes = cur.fetchall()
+        cur.close()
+        conn.close()
+    except Exception as e:
+        print(f"Error en /correos: {e}")
+        clientes = []
+    return render_template('correos.html', clientes=clientes)
 
 
 
