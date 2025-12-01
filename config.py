@@ -28,12 +28,34 @@ DB_PASSWORD = os.getenv('DB_PASSWORD', '')
 # ========================
 SECRET_KEY = os.getenv('SECRET_KEY', 'clave-por-defecto-cambiar-en-produccion')
 
+
 # ========================
-# CONFIGURACIÓN DE NOTIFICACIONES (Futuras implementaciones)
+# CONFIGURACIÓN DE CORREO
 # ========================
-# EMAIL_API_KEY = os.getenv('EMAIL_API_KEY', '')
-# SMS_API_KEY = os.getenv('SMS_API_KEY', '')
-# WHATSAPP_TOKEN = os.getenv('WHATSAPP_TOKEN', '')
+MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
+
+# Utilidad para enviar correos
+import smtplib
+from email.message import EmailMessage
+
+def enviar_correo(destinatario, asunto, mensaje_html):
+    remitente = MAIL_USERNAME
+    contrasena = MAIL_PASSWORD
+    email = EmailMessage()
+    email["From"] = remitente
+    email["To"] = destinatario
+    email["Subject"] = asunto
+    email.set_content(mensaje_html, subtype="html")
+    try:
+        smtp = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        smtp.login(remitente, contrasena)
+        smtp.send_message(email)
+        smtp.quit()
+        return True
+    except Exception as e:
+        print(f"Error al enviar correo a {destinatario}: {e}")
+        return False
 
 # Función para obtener una conexión a la base de datos
 def get_db_connection():
