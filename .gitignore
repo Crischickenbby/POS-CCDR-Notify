@@ -33,3 +33,6 @@ Thumbs.db
 # Archivos temporales
 *.tmp
 *.bak
+
+# Node.js
+node_modules/
