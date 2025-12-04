@@ -1690,4 +1690,6 @@ def logout():
     return redirect(url_for('sesion'))  # O la ruta que uses para el login
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True, threaded=True) #Habilitar threaded para manejar múltiples solicitudes simultáneas
+    import os
+    debug_mode = os.getenv('FLASK_DEBUG', 'False') == 'True'
+    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 5000)), debug=debug_mode, threaded=True) #Habilitar threaded para manejar múltiples solicitudes simultáneas
