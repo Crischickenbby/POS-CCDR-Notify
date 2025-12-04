@@ -20,8 +20,6 @@ module.exports = {
   content: [
     "./app/templates/**/*.html",    // 🔍 Busca en TODOS los HTML dentro de app/templates/
     "./app/static/js/**/*.js",      // 🔍 Busca en TODOS los JS dentro de app/static/js/
-    "./**/*.html",                  // 🔍 Busca en cualquier HTML de todo el proyecto
-    "./**/*.js"                     // 🔍 Busca en cualquier JS de todo el proyecto
   ],
 
   // 🎨 THEME: Aquí personalizas los estilos de Tailwind

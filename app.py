@@ -59,6 +59,8 @@ def login_required(roles=None): #esto sirve para
 
 @app.route('/')#Esta ruta es la principla, donde no tiene que estar regsitrado para poder ver los productos la gente
 def home():
+    conn = None
+    cur = None
     try:
         # Verifica la conexión a la base de datos primero
         conn = get_db_connection()
@@ -82,9 +84,6 @@ def home():
         productos = cur.fetchall()
         #print("📦 Productos obtenidos:", productos)
         
-        cur.close()
-        conn.close()
-        
         if not productos:
             return render_template('index.html', 
                                categorias={},
@@ -107,8 +106,14 @@ def home():
         
     except Exception as e:
         print(f"ERROR COMPLETO: {str(e)}")
-        return render_template('error.html', 
-                            error="Disculpa, estamos teniendo problemas técnicos. Por favor intenta más tarde."), 500
+        return render_template('index.html', 
+                            categorias={},
+                            message="Error conectando a la base de datos")
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
 
 @app.route('/sesion', methods=['GET', 'POST']) # Permitir GET y POST para evitar error tras logout

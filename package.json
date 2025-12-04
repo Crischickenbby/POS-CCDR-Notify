@@ -1,0 +1,42 @@
+{
+  "name": "pos-ccdr-notify",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tailwind.config.js",
+  "scripts": {
+    "build-css": "tailwindcss -i ./app/static/styles/tailwind.css -o ./app/static/styles/output.css",
+    "watch-css": "tailwindcss -i ./app/static/styles/tailwind.css -o ./app/static/styles/output.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Crischickenbby/POS-CCDR-Notify.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Crischickenbby/POS-CCDR-Notify/issues"
+  },
+  "homepage": "https://github.com/Crischickenbby/POS-CCDR-Notify#readme",
+  "dependencies": {
+    "baseline-browser-mapping": "^2.8.32",
+    "browserslist": "^4.28.0",
+    "caniuse-lite": "^1.0.30001757",
+    "electron-to-chromium": "^1.5.263",
+    "escalade": "^3.2.0",
+    "fraction.js": "^5.3.4",
+    "nanoid": "^3.3.11",
+    "node-releases": "^2.0.27",
+    "normalize-range": "^0.1.2",
+    "picocolors": "^1.1.1",
+    "postcss-value-parser": "^4.2.0",
+    "source-map-js": "^1.2.1",
+    "update-browserslist-db": "^1.1.4"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.18"
+  }
+}
