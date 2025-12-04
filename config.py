@@ -18,16 +18,20 @@ load_dotenv()
 # ========================
 # CONFIGURACIÓN DE BASE DE DATOS
 # ========================
-DB_HOST = os.getenv('DB_HOST', 'localhost')
-DB_NAME = os.getenv('DB_NAME', 'CCDR')  # Base de datos para sistema de notificaciones
-DB_USER = os.getenv('DB_USER', 'postgres')
-DB_PASSWORD = os.getenv('DB_PASSWORD', '')
+# Railway proporciona URL_DE_LA_BASE_DE_DATOS automáticamente
+DATABASE_URL = os.getenv('URL_DE_LA_BASE_DE_DATOS')
+
+# Si estamos en desarrollo local, usar variables individuales
+if not DATABASE_URL:
+    DB_HOST = os.getenv('DB_HOST', 'localhost')
+    DB_NAME = os.getenv('DB_NAME', 'CCDR')
+    DB_USER = os.getenv('DB_USER', 'postgres')
+    DB_PASSWORD = os.getenv('DB_PASSWORD', '')
 
 # ========================
 # SEGURIDAD
 # ========================
 SECRET_KEY = os.getenv('SECRET_KEY', 'clave-por-defecto-cambiar-en-produccion')
-
 
 # ========================
 # CONFIGURACIÓN DE CORREO
@@ -61,6 +65,7 @@ def enviar_correo(destinatario, asunto, mensaje_html):
 def get_db_connection():
     """
     Establece y retorna una conexión a la base de datos PostgreSQL.
+    Soporta Railway (URL_DE_LA_BASE_DE_DATOS) y desarrollo local.
     
     Returns:
         psycopg.Connection: Objeto de conexión a PostgreSQL
@@ -68,9 +73,14 @@ def get_db_connection():
     Raises:
         psycopg.Error: Si falla la conexión a la base de datos
     """
-    return psycopg.connect(
-        host=DB_HOST,
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD
-    )
+    if DATABASE_URL:
+        # Usar URL de conexión (Railway)
+        return psycopg.connect(DATABASE_URL)
+    else:
+        # Usar variables individuales (desarrollo local)
+        return psycopg.connect(
+            host=DB_HOST,
+            dbname=DB_NAME,
+            user=DB_USER,
+            password=DB_PASSWORD
+        )
