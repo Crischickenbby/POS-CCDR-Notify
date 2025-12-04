@@ -151,12 +151,27 @@
                                 </div>
                                 <div>
                                     <label class="text-gray-300 text-sm font-semibold mb-2 block">Contraseña</label>
-                                    <input 
-                                        type="password" 
-                                        name="password" 
-                                        class="w-full bg-gray-900 text-white border-2 border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:border-red-600 focus:ring-4 focus:ring-red-600 focus:ring-opacity-20 transition-all duration-300 hover:-translate-y-0.5" 
-                                        placeholder="••••••••"
-                                        required>
+                                    <div class="relative">
+                                        <input 
+                                            type="password" 
+                                            name="password" 
+                                            id="password-register"
+                                            class="w-full bg-gray-900 text-white border-2 border-gray-700 rounded-xl px-4 py-3 pr-12 focus:outline-none focus:border-red-600 focus:ring-4 focus:ring-red-600 focus:ring-opacity-20 transition-all duration-300 hover:-translate-y-0.5" 
+                                            placeholder="••••••••"
+                                            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':&quot;\\|,.<>\/?]).{8,}$"
+                                            title="La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un símbolo"
+                                            required>
+                                        <button 
+                                            type="button" 
+                                            onclick="togglePasswordVisibility('password-register', 'eye-icon-register')"
+                                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors">
+                                            <svg id="eye-icon-register" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <p class="text-xs text-gray-400 mt-2">Mínimo 8 caracteres, una mayúscula, una minúscula y un símbolo</p>
                                 </div>
                                 <button 
                                     type="submit" 
@@ -187,6 +202,24 @@
             checkbox.checked = true;
             registerTab.className = 'register-tab px-8 py-3 rounded-lg font-semibold transition-all duration-300 cursor-pointer bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg';
             loginTab.className = 'login-tab px-8 py-3 rounded-lg font-semibold transition-all duration-300 cursor-pointer text-gray-400 hover:text-gray-300 hover:bg-white hover:bg-opacity-5';
+        }
+
+        function togglePasswordVisibility(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const eyeIcon = document.getElementById(iconId);
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                `;
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                `;
+            }
         }
     </script>
 </body>
